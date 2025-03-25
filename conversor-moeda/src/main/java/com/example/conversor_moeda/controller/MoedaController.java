@@ -3,9 +3,7 @@ package com.example.conversor_moeda.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
-@CrossOrigin(origins = "http://44.204.219.241:8080")
 @RestController
 public class MoedaController {
 
