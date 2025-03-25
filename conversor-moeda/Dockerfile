@@ -1,26 +1,14 @@
-# Usar a imagem oficial do Maven com OpenJDK 17
-FROM maven:latest AS build
+# Use a imagem oficial do OpenJDK
+FROM openjdk:17-jdk-slim
 
 # Definir o diretório de trabalho no contêiner
 WORKDIR /app
 
-# Copiar os arquivos do projeto para o contêiner
-COPY . .
+# Copiar o arquivo JAR para o diretório de trabalho
+COPY target/conversor-moeda-0.0.1-SNAPSHOT.jar /app/conversor-moeda.jar
 
-# Construir o projeto
-RUN mvn clean package
+# Expor a porta 80
+EXPOSE 80
 
-# Usar a imagem do OpenJDK 17 para rodar o aplicativo
-FROM openjdk:17-slim
-
-# Definir o diretório de trabalho no contêiner
-WORKDIR /app
-
-# Copiar o JAR gerado para o contêiner
-COPY --from=build /app/target/conversor-moeda-0.0.1-SNAPSHOT.jar conversor-moeda.jar
-
-# Expor a porta em que a aplicação vai rodar
-EXPOSE 25000
-
-# Rodar o JAR
-ENTRYPOINT ["java", "-jar", "conversor-moeda.jar"]
+# Comando para rodar o seu backend
+ENTRYPOINT ["java", "-jar", "/app/conversor-moeda.jar"]
