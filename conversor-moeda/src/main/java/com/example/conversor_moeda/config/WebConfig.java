@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     @SuppressWarnings("null")
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("http://44.222.138.241:8080");
+        registry.addMapping("http://44.222.138.241:8080/");
     }
     
 }
