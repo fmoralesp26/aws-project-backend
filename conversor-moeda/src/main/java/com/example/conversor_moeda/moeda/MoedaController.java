@@ -3,8 +3,6 @@ package com.example.conversor_moeda.moeda;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
-
 @CrossOrigin(origins = "http://44.204.219.241:8080")
 @RestController
 public class MoedaController {
