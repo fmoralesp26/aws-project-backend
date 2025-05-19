@@ -3,14 +3,16 @@ package com.example.conversor_moeda.moeda;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GenerationType;
 
 @Entity
-@Table(name="empresas")
+@Table(name="moeda")
 public class Moeda {
 
-    @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
-
+    
     private String pais;
     private double valor;
 

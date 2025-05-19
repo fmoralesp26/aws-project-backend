@@ -2,8 +2,9 @@ package com.example.conversor_moeda.moeda;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-@CrossOrigin(origins = "http://44.204.219.241:8080")
 @RestController
 public class MoedaController {
 
@@ -34,4 +35,11 @@ public class MoedaController {
 
         return valor * moeda.getValor();
     }
+
+    @PostMapping("/moeda")
+    public ResponseEntity<Moeda> criarMoeda(@RequestBody Moeda moeda) {
+        Moeda moedaSalva = moedaRepo.save(moeda);
+        return new ResponseEntity<>(moedaSalva, HttpStatus.CREATED);
+    }
+    
 }
