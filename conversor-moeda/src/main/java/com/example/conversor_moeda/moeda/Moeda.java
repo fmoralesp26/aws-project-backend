@@ -4,13 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
-import jakarta.persistence.GenerationType;
 
 @Entity
 @Table(name="moeda")
 public class Moeda {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Id 
+    @GeneratedValue
     private Long id;
     
     private String pais;
@@ -20,6 +20,8 @@ public class Moeda {
         this.pais = pais;
         this.valor = valor;
     }
+
+    public Moeda() {}
 
     public String getPais() {
         return pais;
