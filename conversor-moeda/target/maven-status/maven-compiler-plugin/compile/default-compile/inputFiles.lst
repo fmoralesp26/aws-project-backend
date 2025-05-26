@@ -1,5 +1,0 @@
-/workspaces/aws-project-backend/conversor-moeda/src/main/java/com/example/conversor_moeda/ConversorMoedaApplication.java
-/workspaces/aws-project-backend/conversor-moeda/src/main/java/com/example/conversor_moeda/config/WebConfig.java
-/workspaces/aws-project-backend/conversor-moeda/src/main/java/com/example/conversor_moeda/moeda/Moeda.java
-/workspaces/aws-project-backend/conversor-moeda/src/main/java/com/example/conversor_moeda/moeda/MoedaController.java
-/workspaces/aws-project-backend/conversor-moeda/src/main/java/com/example/conversor_moeda/moeda/MoedaRepo.java
