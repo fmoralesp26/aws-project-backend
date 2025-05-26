@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ moedas = []
 # CREATE
 @app.route('/moedas', methods=['POST'])
 def criar_moeda():
-    dados = request.json
+    dados = request.get_json()
     nome = dados.get('nome')
     valor = dados.get('valor')
 
@@ -50,7 +50,7 @@ def atualizar_moeda(nome):
     if moeda is None:
         return jsonify({'erro': 'Moeda não encontrada'}), 404
 
-    dados = request.json
+    dados = request.get_json()
     valor = dados.get('valor')
     if valor is None:
         return jsonify({'erro': 'valor é obrigatório para atualização'}), 400
