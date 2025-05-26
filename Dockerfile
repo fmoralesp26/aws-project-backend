@@ -8,7 +8,8 @@ WORKDIR /app
 COPY . .
 
 # Instalar Flask
-RUN pip install --no-cache-dir flask
+RUN pip install --no-cache-dir flask flask-cors
+
 
 # Expõe a porta padrão do Flask
 EXPOSE 5000
