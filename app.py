@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Usar variável de ambiente para conexão com banco MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://main:lab-passworf@lab-db.cznhouudifzh.us-east-1.rds.amazonaws.com:3306/lab-db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://main:lab-password@lab-db.cznhouudifzh.us-east-1.rds.amazonaws.com:3306/lab-db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
