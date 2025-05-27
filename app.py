@@ -78,4 +78,4 @@ def deletar_moeda(nome):
 
 if __name__ == '__main__':
     # Rodar no host 0.0.0.0 para aceitar conexões externas no container/Docker/EC2
-    app.run(host='0.0.0.0', port=5050, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
