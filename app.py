@@ -1,16 +1,19 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import mysql.connector
 
 app = Flask(__name__)
 CORS(app)
 
-class Moeda:
-    def __init__(self, nome, valor):
-        self.nome = nome
-        self.valor = valor
+# 🔗 Conexão com o banco RDS
+conn = mysql.connector.connect(
+    host="lab-db.cznhouudifzh.us-east-1.rds.amazonaws.com",        # exemplo: "meu-banco.c8dfx123abc.us-east-1.rds.amazonaws.com"
+    user="main",             # exemplo: "admin"
+    password="lab-password",
+    database="banco_moedas"            # exemplo: "banco_moedas"
+)
 
-# Banco de dados em memória (lista)
-moedas = []
+cursor = conn.cursor(dictionary=True)
 
 # CREATE
 @app.route('/moedas', methods=['POST'])
@@ -22,51 +25,57 @@ def criar_moeda():
     if not nome or valor is None:
         return jsonify({'erro': 'nome e valor são obrigatórios'}), 400
 
-    if any(m.nome == nome for m in moedas):
+    cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
+    if cursor.fetchone():
         return jsonify({'erro': 'Moeda já existe'}), 400
 
-    moeda = Moeda(nome, valor)
-    moedas.append(moeda)
+    cursor.execute("INSERT INTO moedas (nome, valor) VALUES (%s, %s)", (nome, valor))
+    conn.commit()
+
     return jsonify({'mensagem': 'Moeda criada', 'moeda': {'nome': nome, 'valor': valor}}), 201
 
 # READ ALL
 @app.route('/moedas', methods=['GET'])
 def listar_moedas():
-    resultado = [{'nome': m.nome, 'valor': m.valor} for m in moedas]
-    return jsonify(resultado), 200
+    cursor.execute("SELECT nome, valor FROM moedas")
+    moedas = cursor.fetchall()
+    return jsonify(moedas), 200
 
 # READ ONE
 @app.route('/moedas/<string:nome>', methods=['GET'])
 def buscar_moeda(nome):
-    moeda = next((m for m in moedas if m.nome == nome), None)
+    cursor.execute("SELECT nome, valor FROM moedas WHERE nome = %s", (nome,))
+    moeda = cursor.fetchone()
     if moeda is None:
         return jsonify({'erro': 'Moeda não encontrada'}), 404
-    return jsonify({'nome': moeda.nome, 'valor': moeda.valor}), 200
+    return jsonify(moeda), 200
 
 # UPDATE
 @app.route('/moedas/<string:nome>', methods=['PUT'])
 def atualizar_moeda(nome):
-    moeda = next((m for m in moedas if m.nome == nome), None)
-    if moeda is None:
-        return jsonify({'erro': 'Moeda não encontrada'}), 404
-
     dados = request.get_json()
-    valor = dados.get('valor')
-    if valor is None:
+    novo_valor = dados.get('valor')
+
+    if novo_valor is None:
         return jsonify({'erro': 'valor é obrigatório para atualização'}), 400
 
-    moeda.valor = valor
-    return jsonify({'mensagem': 'Moeda atualizada', 'moeda': {'nome': moeda.nome, 'valor': moeda.valor}}), 200
+    cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
+    if cursor.fetchone() is None:
+        return jsonify({'erro': 'Moeda não encontrada'}), 404
+
+    cursor.execute("UPDATE moedas SET valor = %s WHERE nome = %s", (novo_valor, nome))
+    conn.commit()
+    return jsonify({'mensagem': 'Moeda atualizada', 'moeda': {'nome': nome, 'valor': novo_valor}}), 200
 
 # DELETE
 @app.route('/moedas/<string:nome>', methods=['DELETE'])
 def deletar_moeda(nome):
-    global moedas
-    moeda = next((m for m in moedas if m.nome == nome), None)
-    if moeda is None:
+    cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
+    if cursor.fetchone() is None:
         return jsonify({'erro': 'Moeda não encontrada'}), 404
 
-    moedas = [m for m in moedas if m.nome != nome]
+    cursor.execute("DELETE FROM moedas WHERE nome = %s", (nome,))
+    conn.commit()
     return jsonify({'mensagem': 'Moeda deletada'}), 200
 
 if __name__ == '__main__':
