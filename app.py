@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 
@@ -15,7 +15,6 @@ conn = mysql.connector.connect(
 
 cursor = conn.cursor(dictionary=True)
 
-# CREATE
 @app.route('/moedas', methods=['POST'])
 def criar_moeda():
     dados = request.get_json()
@@ -34,14 +33,12 @@ def criar_moeda():
 
     return jsonify({'mensagem': 'Moeda criada', 'moeda': {'nome': nome, 'valor': valor}}), 201
 
-# READ ALL
 @app.route('/moedas', methods=['GET'])
 def listar_moedas():
     cursor.execute("SELECT nome, valor FROM moedas")
     moedas = cursor.fetchall()
     return jsonify(moedas), 200
 
-# READ ONE
 @app.route('/moedas/<string:nome>', methods=['GET'])
 def buscar_moeda(nome):
     cursor.execute("SELECT nome, valor FROM moedas WHERE nome = %s", (nome,))
@@ -50,7 +47,6 @@ def buscar_moeda(nome):
         return jsonify({'erro': 'Moeda não encontrada'}), 404
     return jsonify(moeda), 200
 
-# UPDATE
 @app.route('/moedas/<string:nome>', methods=['PUT'])
 def atualizar_moeda(nome):
     dados = request.get_json()
@@ -67,7 +63,6 @@ def atualizar_moeda(nome):
     conn.commit()
     return jsonify({'mensagem': 'Moeda atualizada', 'moeda': {'nome': nome, 'valor': novo_valor}}), 200
 
-# DELETE
 @app.route('/moedas/<string:nome>', methods=['DELETE'])
 def deletar_moeda(nome):
     cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
