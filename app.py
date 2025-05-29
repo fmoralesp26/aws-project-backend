@@ -1,17 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import mysql.connector
+from db import conn
 
 app = Flask(__name__)
 CORS(app)
-
-# 🔗 Conexão com o banco RDS
-conn = mysql.connector.connect(
-    host="lab-db.cznhouudifzh.us-east-1.rds.amazonaws.com",        # exemplo: "meu-banco.c8dfx123abc.us-east-1.rds.amazonaws.com"
-    user="main",             # exemplo: "admin"
-    password="lab-password",
-    database="banco_moedas"            # exemplo: "banco_moedas"
-)
 
 cursor = conn.cursor(dictionary=True)
 
