@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from db import conn
+from db import create_connection
 
 app = Flask(__name__)
 CORS(app)
 
-cursor = conn.cursor(dictionary=True)
+conn = create_connection()
 
 @app.route('/moedas', methods=['POST'])
 def criar_moeda():
@@ -16,28 +16,43 @@ def criar_moeda():
     if not nome or valor is None:
         return jsonify({'erro': 'nome e valor são obrigatórios'}), 400
 
-    cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
-    if cursor.fetchone():
-        return jsonify({'erro': 'Moeda já existe'}), 400
+    try:
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
+            if cursor.fetchone():
+                return jsonify({'erro': 'Moeda já existe'}), 400
 
-    cursor.execute("INSERT INTO moedas (nome, valor) VALUES (%s, %s)", (nome, valor))
-    conn.commit()
+            cursor.execute("INSERT INTO moedas (nome, valor) VALUES (%s, %s)", (nome, valor))
+            conn.commit()
 
-    return jsonify({'mensagem': 'Moeda criada', 'moeda': {'nome': nome, 'valor': valor}}), 201
+        return jsonify({'mensagem': 'Moeda criada', 'moeda': {'nome': nome, 'valor': valor}}), 201
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
 
 @app.route('/moedas', methods=['GET'])
 def listar_moedas():
-    cursor.execute("SELECT nome, valor FROM moedas")
-    moedas = cursor.fetchall()
-    return jsonify(moedas), 200
+    try:
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute("SELECT nome, valor FROM moedas")
+            moedas = cursor.fetchall()
+        return jsonify(moedas), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
 
 @app.route('/moedas/<string:nome>', methods=['GET'])
 def buscar_moeda(nome):
-    cursor.execute("SELECT nome, valor FROM moedas WHERE nome = %s", (nome,))
-    moeda = cursor.fetchone()
-    if moeda is None:
-        return jsonify({'erro': 'Moeda não encontrada'}), 404
-    return jsonify(moeda), 200
+    try:
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute("SELECT nome, valor FROM moedas WHERE nome = %s", (nome,))
+            moeda = cursor.fetchone()
+        if moeda is None:
+            return jsonify({'erro': 'Moeda não encontrada'}), 404
+        return jsonify(moeda), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
 
 @app.route('/moedas/<string:nome>', methods=['PUT'])
 def atualizar_moeda(nome):
@@ -47,23 +62,33 @@ def atualizar_moeda(nome):
     if novo_valor is None:
         return jsonify({'erro': 'valor é obrigatório para atualização'}), 400
 
-    cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
-    if cursor.fetchone() is None:
-        return jsonify({'erro': 'Moeda não encontrada'}), 404
+    try:
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
+            if cursor.fetchone() is None:
+                return jsonify({'erro': 'Moeda não encontrada'}), 404
 
-    cursor.execute("UPDATE moedas SET valor = %s WHERE nome = %s", (novo_valor, nome))
-    conn.commit()
-    return jsonify({'mensagem': 'Moeda atualizada', 'moeda': {'nome': nome, 'valor': novo_valor}}), 200
+            cursor.execute("UPDATE moedas SET valor = %s WHERE nome = %s", (novo_valor, nome))
+            conn.commit()
+        return jsonify({'mensagem': 'Moeda atualizada', 'moeda': {'nome': nome, 'valor': novo_valor}}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
 
 @app.route('/moedas/<string:nome>', methods=['DELETE'])
 def deletar_moeda(nome):
-    cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
-    if cursor.fetchone() is None:
-        return jsonify({'erro': 'Moeda não encontrada'}), 404
+    try:
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute("SELECT * FROM moedas WHERE nome = %s", (nome,))
+            if cursor.fetchone() is None:
+                return jsonify({'erro': 'Moeda não encontrada'}), 404
 
-    cursor.execute("DELETE FROM moedas WHERE nome = %s", (nome,))
-    conn.commit()
-    return jsonify({'mensagem': 'Moeda deletada'}), 200
+            cursor.execute("DELETE FROM moedas WHERE nome = %s", (nome,))
+            conn.commit()
+        return jsonify({'mensagem': 'Moeda deletada'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
