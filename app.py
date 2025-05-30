@@ -1,11 +1,22 @@
+import mysql.connector
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from db import create_connection
 
 app = Flask(__name__)
 CORS(app)
 
-conn = create_connection()
+try:
+    conn = mysql.connector.connect(
+        host="lab-db.cznhouudifzh.us-east-1.rds.amazonaws.com",
+        user="main",
+        password="lab-password",
+        database="banco_moedas"
+    )
+    print("Conexão bem-sucedida!")
+except mysql.connector.Error as err:
+    print("Erro ao conectar ao MySQL:")
+    print(f"Tipo: {type(err)}")
+    print(f"Mensagem: {err}")
 
 @app.route('/moedas', methods=['POST'])
 def criar_moeda():
