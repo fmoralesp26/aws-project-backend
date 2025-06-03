@@ -20,7 +20,7 @@ Este projeto é uma API REST em Flask para cadastro, consulta, atualização e r
 
 1. **Clone o repositório**
    ```bash
-   git clone <url-do-repo>
+   git clone [<url-do-repo>](https://github.com/fmoralesp26/aws-project-backend.git)
    cd aws-project-backend
    ```
 
